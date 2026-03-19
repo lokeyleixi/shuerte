@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>舒尔特专注力方格训练器</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #f0f0f0;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, #00b4db, #0083b0);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 2px 10px rgba(0, 180, 219, 0.3);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #a0a0c0;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: center;
+        }
+        
+        .control-panel {
+            flex: 1;
+            min-width: 300px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .game-board {
+            flex: 2;
+            min-width: 500px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #00b4db;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-title i {
+            font-size: 1.3rem;
+        }
+        
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        label {
+            font-weight: 600;
+            color: #b0b0d0;
+        }
+        
+        .size-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .size-btn {
+            padding: 12px 18px;
+            background: rgba(0, 180, 219, 0.2);
+            border: 2px solid rgba(0, 180, 219, 0.3);
+            color: #00b4db;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 70px;
+            text-align: center;
+        }
+        
+        .size-btn:hover {
+            background: rgba(0, 180, 219, 0.3);
+            transform: translateY(-3px);
+        }
+        
+        .size-btn.active {
+            background: rgba(0, 180, 219, 0.6);
+            border-color: #00b4db;
+            color: white;
+            box-shadow: 0 5px 15px rgba(0, 180, 219, 0.4);
+        }
+        
+        .btn {
+            padding: 15px;
+            background: linear-gradient(to right, #00b4db, #0083b0);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(0, 180, 219, 0.4);
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+        }
+        
+        .btn.reset {
+            background: linear-gradient(to right, #f46b45, #eea849);
+        }
+        
+        .btn.reset:hover {
+            box-shadow: 0 7px 20px rgba(244, 107, 69, 0.4);
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #00b4db;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #a0a0c0;
+        }
+        
+        .grid-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0 30px;
+        }
+        
+        .grid {
+            display: grid;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .cell {
+            width: 70px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #f0f0f0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .cell:hover {
+            background: rgba(0, 180, 219, 0.2);
+            transform: scale(1.05);
+        }
+        
+        .cell.active {
+            background: linear-gradient(135deg, #00b4db, #0083b0);
+            color: white;
+            box-shadow: 0 0 15px rgba(0, 180, 219, 0.5);
+            transform: scale(1.05);
+        }
+        
+        .cell.completed {
+            background: rgba(0, 200, 83, 0.2);
+            color: #4caf50;
+        }
+        
+        .timer-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50px;
+            border: 2px solid rgba(0, 180, 219, 0.3);
+        }
+        
+        .timer {
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: #00b4db;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .instructions {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            border-left: 5px solid #00b4db;
+        }
+        
+        .instructions h3 {
+            margin-bottom: 15px;
+            color: #00b4db;
+        }
+        
+        .instructions p {
+            line-height: 1.6;
+            color: #b0b0d0;
+            margin-bottom: 10px;
+        }
+        
+        .instructions ul {
+            padding-left: 20px;
+            margin-top: 10px;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+            color: #b0b0d0;
+            line-height: 1.5;
+        }
+        
+        .completion-message {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+        
+        .completion-content {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 180, 219, 0.3);
+            border: 2px solid rgba(0, 180, 219, 0.5);
+            animation: popIn 0.5s ease;
+        }
+        
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .completion-content h2 {
+            font-size: 2.5rem;
+            color: #00b4db;
+            margin-bottom: 20px;
+        }
+        
+        .completion-content p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            color: #b0b0d0;
+        }
+        
+        .result-time {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: #4caf50;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .difficulty-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-top: 10px;
+            background: rgba(0, 180, 219, 0.2);
+            color: #00b4db;
+        }
+        
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            color: #707090;
+            font-size: 0.9rem;
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            width: 100%;
+        }
+        
+        @media (max-width: 900px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .control-panel, .game-board {
+                min-width: 100%;
+            }
+            
+            .cell {
+                width: 60px;
+                height: 60px;
+                font-size: 1.5rem;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .cell {
+                width: 50px;
+                height: 50px;
+                font-size: 1.3rem;
+            }
+            
+            .timer {
+                font-size: 2.2rem;
+            }
+            
+            .size-btn {
+                padding: 10px 12px;
+                min-width: 60px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .cell {
+                width: 45px;
+                height: 45px;
+                font-size: 1.2rem;
+            }
+            
+            .grid {
+                gap: 5px;
+                padding: 10px;
+            }
+            
+            .stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-brain"></i> 舒尔特专注力方格训练器</h1>
+            <p class="subtitle">舒尔特方格是心理学上用于训练注意力和视觉搜索能力的专业工具。按照数字顺序依次点击方格，完成挑战以提高专注力。</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="control-panel">
+                <h2 class="section-title"><i class="fas fa-sliders-h"></i> 训练设置</h2>
+                <div class="controls">
+                    <div class="control-group">
+                        <label><i class="fas fa-th"></i> 选择方格大小</label>
+                        <div class="size-selector">
+                            <div class="size-btn active" data-size="5">5×5 (初级)</div>
+                            <div class="size-btn" data-size="6">6×6 (中级)</div>
+                            <div class="size-btn" data-size="7">7×7 (高级)</div>
+                            <div class="size-btn" data-size="8">8×8 (专家)</div>
+                            <div class="size-btn" data-size="9">9×9 (大师)</div>
+                        </div>
+                    </div>
+                    
+                    <button class="btn" id="startBtn">
+                        <i class="fas fa-play"></i> 开始训练
+                    </button>
+                    
+                    <button class="btn reset" id="resetBtn">
+                        <i class="fas fa-redo"></i> 重新开始
+                    </button>
+                    
+                    <div class="stats">
+                        <div class="stat-card">
+                            <div class="stat-value" id="bestTime">--.--</div>
+                            <div class="stat-label">最佳记录</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="avgTime">--.--</div>
+                            <div class="stat-label">平均用时</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="completedCount">0</div>
+                            <div class="stat-label">完成次数</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="currentSize">5×5</div>
+                            <div class="stat-label">当前难度</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="game-board">
+                <h2 class="section-title"><i class="fas fa-gamepad"></i> 训练区域</h2>
+                
+                <div class="timer-container">
+                    <i class="fas fa-clock" style="color:#00b4db; font-size: 2rem;"></i>
+                    <div class="timer" id="timer">00.00</div>
+                </div>
+                
+                <div class="grid-container">
+                    <div class="grid" id="grid">
+                        <!-- 舒尔特方格将在这里生成 -->
+                    </div>
+                </div>
+                
+                <div class="instructions">
+                    <h3><i class="fas fa-info-circle"></i> 训练指南</h3>
+                    <p>舒尔特方格训练法：</p>
+                    <ul>
+                        <li>按数字顺序从1开始依次点击方格</li>
+                        <li>尽量快速且准确地点按所有数字</li>
+                        <li>每天坚持练习5-10分钟，可有效提高注意力</li>
+                        <li>尝试不同难度级别以逐步提升能力</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="completion-message" id="completionMessage">
+            <div class="completion-content">
+                <h2><i class="fas fa-trophy"></i> 训练完成！</h2>
+                <p>恭喜你成功完成了舒尔特方格训练</p>
+                <div class="result-time" id="resultTime">00.00</div>
+                <div class="difficulty-badge" id="resultDifficulty">5×5 初级</div>
+                <p id="resultFeedback">优秀的成绩！继续保持训练！</p>
+                <button class="btn" id="closeMessageBtn" style="margin-top: 20px;">
+                    <i class="fas fa-redo"></i> 再来一次
+                </button>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>舒尔特专注力方格训练器 | 心理学注意力训练工具 | 建议每天练习5-10分钟以提高专注力</p>
+            <p>© 2023 专注力训练中心 | 设计用于教育目的</p>
+        </div>
+    </div>
+
+    <script>
+        // 游戏状态变量
+        let gridSize = 5;
+        let currentNumber = 1;
+        let timer = 0;
+        let timerInterval = null;
+        let isPlaying = false;
+        let startTime = null;
+        let bestTimes = {
+            5: localStorage.getItem('bestTime5') || null,
+            6: localStorage.getItem('bestTime6') || null,
+            7: localStorage.getItem('bestTime7') || null,
+            8: localStorage.getItem('bestTime8') || null,
+            9: localStorage.getItem('bestTime9') || null
+        };
+        let completedCount = localStorage.getItem('completedCount') || 0;
+        let totalTime = localStorage.getItem('totalTime') || 0;
+        
+        // DOM元素
+        const gridElement = document.getElementById('grid');
+        const timerElement = document.getElementById('timer');
+        const startBtn = document.getElementById('startBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const sizeButtons = document.querySelectorAll('.size-btn');
+        const completionMessage = document.getElementById('completionMessage');
+        const closeMessageBtn = document.getElementById('closeMessageBtn');
+        const resultTimeElement = document.getElementById('resultTime');
+        const resultDifficulty = document.getElementById('resultDifficulty');
+        const resultFeedback = document.getElementById('resultFeedback');
+        const bestTimeElement = document.getElementById('bestTime');
+        const avgTimeElement = document.getElementById('avgTime');
+        const completedCountElement = document.getElementById('completedCount');
+        const currentSizeElement = document.getElementById('currentSize');
+        
+        // 初始化页面
+        function init() {
+            updateStats();
+            createGrid(gridSize);
+            attachEventListeners();
+        }
+        
+        // 创建舒尔特方格
+        function createGrid(size) {
+            gridElement.innerHTML = '';
+            gridElement.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+            
+            // 创建数字数组
+            const numbers = Array.from({length: size * size}, (_, i) => i + 1);
+            
+            // 随机排序数字
+            shuffleArray(numbers);
+            
+            // 创建单元格
+            for (let i = 0; i < size * size; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.textContent = numbers[i];
+                cell.dataset.number = numbers[i];
+                cell.addEventListener('click', () => handleCellClick(cell));
+                gridElement.appendChild(cell);
+            }
+            
+            currentSizeElement.textContent = `${size}×${size}`;
+        }
+        
+        // 随机打乱数组
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+        
+        // 处理方格点击
+        function handleCellClick(cell) {
+            if (!isPlaying) return;
+            
+            const cellNumber = parseInt(cell.dataset.number);
+            
+            if (cellNumber === currentNumber) {
+                // 点击了正确的数字
+                cell.classList.add('active');
+                
+                setTimeout(() => {
+                    cell.classList.remove('active');
+                    cell.classList.add('completed');
+                }, 150);
+                
+                currentNumber++;
+                
+                // 检查是否完成
+                if (currentNumber > gridSize * gridSize) {
+                    finishGame();
+                }
+            }
+        }
+        
+        // 开始游戏
+        function startGame() {
+            if (isPlaying) return;
+            
+            resetGrid();
+            isPlaying = true;
+            currentNumber = 1;
+            startTime = Date.now();
+            
+            // 开始计时器
+            timer = 0;
+            timerElement.textContent = '00.00';
+            
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(updateTimer, 10);
+            
+            startBtn.innerHTML = '<i class="fas fa-pause"></i> 训练中...';
+            startBtn.style.background = 'linear-gradient(to right, #f46b45, #eea849)';
+        }
+        
+        // 重置游戏
+        function resetGame() {
+            isPlaying = false;
+            currentNumber = 1;
+            timer = 0;
+            timerElement.textContent = '00.00';
+            
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+            
+            resetGrid();
+            startBtn.innerHTML = '<i class="fas fa-play"></i> 开始训练';
+            startBtn.style.background = 'linear-gradient(to right, #00b4db, #0083b0)';
+        }
+        
+        // 重置方格
+        function resetGrid() {
+            const cells = document.querySelectorAll('.cell');
+            cells.forEach(cell => {
+                cell.classList.remove('active', 'completed');
+            });
+        }
+        
+        // 更新计时器
+        function updateTimer() {
+            timer = (Date.now() - startTime) / 1000;
+            timerElement.textContent = timer.toFixed(2);
+        }
+        
+        // 完成游戏
+        function finishGame() {
+            isPlaying = false;
+            clearInterval(timerInterval);
+            
+            // 更新统计数据
+            completedCount++;
+            totalTime = parseFloat(totalTime) + timer;
+            
+            // 检查是否是最佳成绩
+            if (!bestTimes[gridSize] || timer < parseFloat(bestTimes[gridSize])) {
+                bestTimes[gridSize] = timer.toFixed(2);
+                localStorage.setItem(`bestTime${gridSize}`, timer.toFixed(2));
+            }
+            
+            localStorage.setItem('completedCount', completedCount);
+            localStorage.setItem('totalTime', totalTime);
+            
+            updateStats();
+            
+            // 显示完成消息
+            showCompletionMessage();
+        }
+        
+        // 显示完成消息
+        function showCompletionMessage() {
+            resultTimeElement.textContent = timer.toFixed(2);
+            
+            let difficultyText = '';
+            if (gridSize === 5) difficultyText = '5×5 初级';
+            else if (gridSize === 6) difficultyText = '6×6 中级';
+            else if (gridSize === 7) difficultyText = '7×7 高级';
+            else if (gridSize === 8) difficultyText = '8×8 专家';
+            else difficultyText = '9×9 大师';
+            
+            resultDifficulty.textContent = difficultyText;
+            
+            // 提供反馈
+            let feedback = '';
+            if (timer < gridSize * 2) {
+                feedback = '惊人的速度！你的专注力非常出色！';
+            } else if (timer < gridSize * 3) {
+                feedback = '优秀的成绩！继续保持训练！';
+            } else if (timer < gridSize * 4) {
+                feedback = '良好的表现！每天坚持练习会有更大进步！';
+            } else {
+                feedback = '不错的开始！随着练习你会越来越快！';
+            }
+            
+            resultFeedback.textContent = feedback;
+            completionMessage.style.display = 'flex';
+        }
+        
+        // 更新统计数据
+        function updateStats() {
+            // 最佳时间
+            const bestTime = bestTimes[gridSize];
+            bestTimeElement.textContent = bestTime ? parseFloat(bestTime).toFixed(2) : '--.--';
+            
+            // 平均时间
+            const avgTime = completedCount > 0 ? (totalTime / completedCount).toFixed(2) : '--.--';
+            avgTimeElement.textContent = avgTime;
+            
+            // 完成次数
+            completedCountElement.textContent = completedCount;
+        }
+        
+        // 事件监听器
+        function attachEventListeners() {
+            // 开始/暂停按钮
+            startBtn.addEventListener('click', () => {
+                if (isPlaying) {
+                    resetGame();
+                } else {
+                    startGame();
+                }
+            });
+            
+            // 重置按钮
+            resetBtn.addEventListener('click', resetGame);
+            
+            // 尺寸选择按钮
+            sizeButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const newSize = parseInt(btn.dataset.size);
+                    
+                    if (newSize !== gridSize) {
+                        sizeButtons.forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        
+                        gridSize = newSize;
+                        resetGame();
+                        createGrid(gridSize);
+                        updateStats();
+                    }
+                });
+            });
+            
+            // 关闭完成消息按钮
+            closeMessageBtn.addEventListener('click', () => {
+                completionMessage.style.display = 'none';
+                resetGame();
+            });
+        }
+        
+        // 页面加载时初始化
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
